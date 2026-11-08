@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Найди ошибку — математика</title>
+<style>
+  /* ─────────────────────────────────────────────
+     Базовые стили и палитра
+     ───────────────────────────────────────────── */
+  :root {
+    --bg: #f4f1ea;
+    --bg-soft: #fbf9f4;
+    --card: #ffffff;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-light: #eef2ff;
+    --success: #16a34a;
+    --success-light: #dcfce7;
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+    --border: #e5e7eb;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-hover: 0 4px 6px rgba(0,0,0,0.07), 0 10px 20px rgba(0,0,0,0.06);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+                 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #f4f1ea 0%, #ece7dc 100%);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ─────────────────────────────────────────────
+     Шапка
+     ───────────────────────────────────────────── */
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .header-inner {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-chip.success {
+    background: var(--success-light);
+    color: var(--success);
+  }
+
+  .progress-track {
+    flex: 1;
+    min-width: 200px;
+    height: 10px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, #818cf8 100%);
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  /* ─────────────────────────────────────────────
+     Основная область
+     ───────────────────────────────────────────── */
+  main {
+    max-width: 920px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+
+  .intro {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary);
+  }
+
+  .intro h2 {
+    font-size: 18px;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+  }
+
+  .intro p {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .intro ul {
+    margin-top: 8px;
+    padding-left: 20px;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .intro li {
+    margin-bottom: 4px;
+  }
+
+  /* ─────────────────────────────────────────────
+     Карточка примера
+     ───────────────────────────────────────────── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+  }
+
+  .card.correct {
+    border-color: var(--success);
+    background: linear-gradient(0deg, var(--success-light) 0%, var(--card) 35%);
+  }
+
+  .card.wrong {
+    border-color: var(--danger);
+    background: linear-gradient(0deg, var(--danger-light) 0%, var(--card) 35%);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .num-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .card.correct .num-badge { background: var(--success); }
+  .card.wrong .num-badge { background: var(--danger); }
+
+  .example-text {
+    font-size: 20px;
+    font-family: 'Cambria Math', 'Times New Roman', Georgia, serif;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .wrong-answer {
+    color: var(--danger);
+    font-weight: 600;
+    background: var(--danger-light);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* ─────────────────────────────────────────────
+     Поле ввода и кнопка
+     ───────────────────────────────────────────── */
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .input-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .answer-input {
+    flex: 1;
+    min-width: 140px;
+    padding: 10px 14px;
+    font-size: 17px;
+    font-family: 'Cambria Math', 'Times New Roman', Georgia, serif;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-soft);
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+
+  .answer-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+
+  .answer-input:disabled {
+    background: #f3f4f6;
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .check-btn {
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .check-btn:hover:not(:disabled) {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+  }
+
+  .check-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .check-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+  }
+
+  /* ─────────────────────────────────────────────
+     Блок обратной связи
+     ───────────────────────────────────────────── */
+  .feedback {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    display: none;
+  }
+
+  .feedback.show { display: block; animation: slideDown 0.3s ease; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .feedback.correct {
+    background: var(--success-light);
+    color: #14532d;
+    border-left: 4px solid var(--success);
+  }
+
+  .feedback.wrong {
+    background: var(--danger-light);
+    color: #7f1d1d;
+    border-left: 4px solid var(--danger);
+  }
+
+  .feedback strong { font-weight: 700; }
+
+  .feedback .correct-answer {
+    font-family: 'Cambria Math', 'Times New Roman', Georgia, serif;
+    font-size: 16px;
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 0 2px;
+    border: 1px solid var(--border);
+  }
+
+  /* ─────────────────────────────────────────────
+     Нижние кнопки
+     ───────────────────────────────────────────── */
+  .footer-actions {
+    max-width: 920px;
+    margin: 24px auto 0;
+    padding: 0 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--card);
+    color: var(--primary-dark);
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: var(--primary-light);
+  }
+
+  /* ─────────────────────────────────────────────
+     Модальное окно с итогами
+     ───────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 32px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-emoji {
+    font-size: 64px;
+    margin-bottom: 12px;
+  }
+
+  .modal h2 {
+    font-size: 24px;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+  }
+
+  .modal-score {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 16px 0 8px;
+  }
+
+  .modal-score small {
+    font-size: 24px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .modal-message {
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-btn {
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .modal-btn:hover { background: var(--primary-dark); }
+
+  /* ─────────────────────────────────────────────
+     Адаптивность
+     ───────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    h1 { font-size: 22px; }
+    .example-text { font-size: 17px; }
+    .answer-input { font-size: 16px; min-width: 110px; }
+    .card { padding: 16px 18px; }
+    .stat-chip { font-size: 13px; padding: 5px 11px; }
+    main { padding: 0 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>🔍 Найди ошибку</h1>
+    <div class="subtitle">Действия с положительными и отрицательными десятичными дробями</div>
+    <div class="stats-row">
+      <div class="stat-chip">Решено: <span id="solved-count">0</span>/20</div>
+      <div class="stat-chip success">Верно: <span id="correct-count">0</span>/20</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="intro">
+    <h2>Как играть</h2>
+    <p>В каждом примере допущена <strong>ошибка</strong> — ответ неверный. Ваша задача:</p>
+    <ul>
+      <li>найти правильный ответ и вписать его в поле;</li>
+      <li>нажать <strong>«Проверить»</strong> — игра сразу покажет, верно ли решено;</li>
+      <li>если ошиблись — прочитайте подсказку с правилом и попробуйте снова.</li>
+    </ul>
+    <p style="margin-top:8px;">Подсказка: десятичную запятую можно вводить как <code>,</code> так и <code>.</code>. Знак «минус» — обычный дефис.</p>
+    <p style="margin-top:6px; color: var(--primary-dark);"><strong>🎲 Каждый раз — новые примеры!</strong> При запуске и при нажатии «Начать заново» генерируется новый набор из 20 случайных заданий того же типа.</p>
+  </div>
+
+  <div id="cards-container"></div>
+</main>
+
+<div class="footer-actions">
+  <button class="btn-secondary" id="reveal-all-btn">Показать все ответы</button>
+  <button class="btn-secondary" id="reset-btn">Начать заново</button>
+</div>
+
+<!-- Модальное окно с итогами -->
+<div class="modal-overlay" id="results-modal">
+  <div class="modal">
+    <div class="modal-emoji" id="modal-emoji">🎉</div>
+    <h2 id="modal-title">Отличная работа!</h2>
+    <div class="modal-score"><span id="modal-correct">0</span><small>/20</small></div>
+    <div class="modal-message" id="modal-message"></div>
+    <button class="modal-btn" id="modal-close-btn">Закрыть</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// Генератор примеров с ошибками
+// Каждый запуск игры создаёт новый набор из 20 примеров.
+// Типы ошибок те же, что и в оригинальном листе:
+// знаки, сложение/вычитание, умножение, деление, смешанные.
+// ─────────────────────────────────────────────
+
+// Вспомогательные функции для случайных чисел
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function randDec(min, max, decimals) {
+  const factor = Math.pow(10, decimals);
+  return Math.round((Math.random() * (max - min) + min) * factor) / factor;
+}
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// Форматирование числа в русский формат (запятая, без trailing нулей)
+function fmt(n) {
+  if (n === 0) return '0';
+  // Округлим до 4 знаков, чтобы избежать артефактов float
+  let rounded = Math.round(n * 10000) / 10000;
+  if (Number.isInteger(rounded)) return String(rounded);
+  let s = rounded.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+  return s.replace('.', ',');
+}
+
+// Знак числа для отображения: отрицательные → «−», положительные → «+» (опционально)
+function sign(n) { return n < 0 ? '−' : '+'; }
+function abs(n) { return Math.abs(n); }
+
+// ─────────────────────────────────────────────
+// 15 генераторов примеров (по типам ошибок)
+// ─────────────────────────────────────────────
+const GENERATORS = [
+  // 1. Знаки при сложении двух отрицательных
+  () => {
+    const a = randDec(1, 9, 1);
+    const b = randDec(1, 9, 1);
+    const sum = Math.round((a + b) * 10) / 10;
+    return {
+      expr: `−${fmt(a)} + (−${fmt(b)}) =`,
+      wrong: `+${fmt(sum)}`,
+      correct: `-${fmt(sum)}`,
+      explain: `При сложении двух отрицательных чисел нужно сложить их модули и поставить знак «−»: ${fmt(a)} + ${fmt(b)} = ${fmt(sum)} → <strong>−${fmt(sum)}</strong>.`
+    };
+  },
+
+  // 2. Выравнивание разрядов при сложении (a с 1 знаком + b с 2 знаками)
+  () => {
+    const a = randDec(2, 9, 1);          // например 6,3
+    const b = randDec(1, 5, 2);          // например 2,85
+    const correct = Math.round((a + b) * 100) / 100;
+    // Ошибка: сложили как X.Y + Z.WV = (X+Z).(Y+WV как двузначное)
+    const aT = Math.floor(a * 10);       // 63
+    const bT = Math.round(b * 100);      // 285
+    const wrongSum = aT * 100 + bT;      // 6300 + 285 = 6585 → 6,585? нет, нужно 8,88 стиль
+    // Лучше смоделировать: 6,3 + 2,85 → 6+2=8, 3+85=88 → 8,88
+    const aInt = Math.floor(a);
+    const aFrac = Math.round((a - aInt) * 10);  // десятые
+    const bInt = Math.floor(b);
+    const bFrac = Math.round((b - bInt) * 100); // сотые
+    const wrongNum = (aInt + bInt) + (aFrac * 10 + bFrac) / 100;
+    return {
+      expr: `${fmt(a)} + ${fmt(b)} =`,
+      wrong: fmt(wrongNum),
+      correct: fmt(correct),
+      explain: `Числа нужно выровнять по запятой: ${fmt(a)}0 + ${fmt(b)} = <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 3. Знаки после запятой при умножении (недостаточное количество знаков)
+  () => {
+    const a = randDec(1, 9, 1) / 10;     // 0,X
+    const b = randDec(1, 9, 1) / 10;     // 0,Y
+    const correct = Math.round(a * b * 10000) / 10000;  // 0,XY (2 знака)
+    const wrong = Math.round(a * b * 10) / 10;          // X,Y (1 знак — ошибка)
+    return {
+      expr: `${fmt(a)} × ${fmt(b)} =`,
+      wrong: fmt(wrong),
+      correct: fmt(correct),
+      explain: `В обоих множителях вместе 2 знака после запятой, поэтому в произведении тоже 2 знака: ${Math.round(a*10)} × ${Math.round(b*10)} = ${Math.round(a*b*100)} → <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 4. Перенос запятой при делении на 0,X (перенос в одну сторону)
+  () => {
+    const a = randDec(1, 9, 1);          // например 4,8
+    const bT = randInt(2, 9);            // делитель 0,bT
+    const b = bT / 10;
+    const correct = Math.round((a / b) * 10) / 10;
+    const wrong = Math.round((a / (b * 10)) * 1000) / 1000;  // разделили на 10 раз больше
+    return {
+      expr: `${fmt(a)} : ${fmt(b)} =`,
+      wrong: fmt(wrong),
+      correct: fmt(correct),
+      explain: `Переносим запятую на 1 знак вправо в обоих числах: ${fmt(a*10)} : ${bT} = <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 5. Минус на минус при вычитании отрицательного
+  () => {
+    const a = randDec(3, 9, 1);
+    const b = randDec(1, 4, 1);
+    const correct = -a + b;              // -a + b = b - a (отрицательное, т.к. a > b)
+    const wrong = -(a + b);              // ошибка: сложили модули
+    return {
+      expr: `−${fmt(a)} − (−${fmt(b)}) =`,
+      wrong: `−${fmt(a + b)}`,
+      correct: fmt(correct),
+      explain: `Минус на минус даёт плюс: −${fmt(a)} + ${fmt(b)} = <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 6. Умножение разных знаков (потеря минуса)
+  () => {
+    const a = randDec(1, 5, 1);
+    const b = randDec(1, 9, 1) / 10;
+    const correct = -(a * b);
+    const wrong = +(a * b);
+    return {
+      expr: `${fmt(a)} × (−${fmt(b)}) =`,
+      wrong: fmt(a * b),
+      correct: fmt(correct),
+      explain: `Разные знаки → результат отрицательный: ${fmt(a)} × ${fmt(b)} = ${fmt(a*b)} → <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 7. Сложение разных знаков (сложение модулей вместо вычитания)
+  () => {
+    const a = randDec(2, 9, 1);
+    const b = randDec(1, Math.floor(a * 10) - 11, 1);
+    if (b <= 0) return GENERATORS[6]();  // fallback
+    const correct = -(a - b);
+    const wrong = -(a + b);
+    return {
+      expr: `−${fmt(a)} + ${fmt(b)} =`,
+      wrong: `−${fmt(a + b)}`,
+      correct: fmt(correct),
+      explain: `Из большего модуля вычитаем меньший: ${fmt(a)} − ${fmt(b)} = ${fmt(a-b)}, знак «−» → <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 8. Произведение двух отрицательных (потеря плюса)
+  () => {
+    const a = randDec(1, 9, 1) / 10;
+    const b = randDec(1, 9, 1) / 10;
+    const correct = a * b;
+    const wrong = -(a * b);
+    return {
+      expr: `−${fmt(a)} × (−${fmt(b)}) =`,
+      wrong: `−${fmt(correct)}`,
+      correct: fmt(correct),
+      explain: `Произведение двух отрицательных чисел положительно: ${fmt(a)} × ${fmt(b)} = <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 9. Деление двух отрицательных (потеря плюса)
+  () => {
+    const bT = randInt(2, 9);
+    const qT = randInt(2, 9);            // частное
+    const aT = bT * qT;                  // чтобы делилось нацело
+    const a = aT / 10;
+    const b = bT / 10;
+    const correct = aT / bT;
+    const wrong = -(aT / bT);
+    return {
+      expr: `−${fmt(a)} : (−${fmt(b)}) =`,
+      wrong: `−${fmt(correct)}`,
+      correct: fmt(correct),
+      explain: `Частное двух отрицательных чисел положительно: ${aT} : ${bT} = <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 10. Вычитание с заёмом (из целого)
+  () => {
+    const intPart = randInt(5, 12);
+    const b = randDec(1, intPart - 1, 1);
+    const correct = intPart - b;
+    // Ошибка: вычли целые и десятые отдельно без заёма: intPart-0 , 0-X = (intPart-floor(b)).(10-X) — неправильно
+    const bInt = Math.floor(b);
+    const bFrac = Math.round((b - bInt) * 10);
+    const wrong = (intPart - bInt) + (10 - bFrac) / 10;  // например 10-4.8 → 6.8 (10-4=6, 10-8=2→нет, 10-8=2 должно, но ошибка 8)
+    // На самом деле типичная ошибка: 10 - 4.8 = 6.8 (вычли 4 из 10, а потом приписали .8)
+    const wrongNum = (intPart - bInt) + (bFrac / 10);
+    return {
+      expr: `${intPart} − ${fmt(b)} =`,
+      wrong: fmt(wrongNum),
+      correct: fmt(correct),
+      explain: `Нужен заём: ${intPart},0 − ${fmt(b)} = <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 11. Деление на 0,0X (недостаточный перенос)
+  () => {
+    const bT = randInt(2, 9);            // делитель 0,0bT
+    const qT = randInt(2, 9);            // частное
+    const aT = bT * qT;                  // чтобы делилось нацело: a = qT (например 3.6 : 0.06 = 60)
+    const a = aT / 10;                   // 3,6
+    const b = bT / 100;                  // 0,06
+    const correct = qT * 10;             // 60
+    const wrong = qT;                    // 6 (перенесли на 1 знак вместо 2)
+    return {
+      expr: `${fmt(a)} : ${fmt(b)} =`,
+      wrong: fmt(wrong),
+      correct: fmt(correct),
+      explain: `Переносим запятую на 2 знака в обоих числах: ${fmt(a*100)} : ${bT} = <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 12. Противоположные числа в сумме
+  () => {
+    const a = randDec(1, 9, 1);
+    const correct = 0;
+    const wrong = -(a * 2);
+    return {
+      expr: `−${fmt(a)} + ${fmt(a)} =`,
+      wrong: `−${fmt(a * 2)}`,
+      correct: '0',
+      explain: `Противоположные числа в сумме дают <strong>0</strong>.`
+    };
+  },
+
+  // 13. Умножение на 0,01 (недостаточный перенос)
+  () => {
+    const a = randDec(1, 9, 1);
+    const correct = a / 100;
+    const wrong = a / 10;
+    return {
+      expr: `${fmt(a)} × 0,01 =`,
+      wrong: fmt(wrong),
+      correct: fmt(correct),
+      explain: `При умножении на 0,01 запятая переносится на 2 знака влево: <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 14. Квадрат отрицательного (потеря плюса)
+  () => {
+    const a = randDec(11, 19, 1) / 10;   // 1,1 - 1,9
+    const correct = a * a;
+    const wrong = -(a * a);
+    return {
+      expr: `−${fmt(a)} × (−${fmt(a)}) =`,
+      wrong: `−${fmt(correct)}`,
+      correct: fmt(correct),
+      explain: `Произведение двух отрицательных чисел положительно. Квадрат любого ненулевого числа > 0: <strong>${fmt(correct)}</strong>.`
+    };
+  },
+
+  // 15. Смешанное: 3 действия с потерей знака на последнем шаге
+  () => {
+    const a = randDec(2, 6, 1);
+    const b = randDec(1, 4, 1);
+    const c = randDec(1, 9, 1) / 10;
+    // -a + b - c: правильно
+    const step1 = -a + b;
+    const correct = Math.round((step1 - c) * 100) / 100;
+    // Ошибка: потеряли знак на последнем шаге: step1 + c
+    const wrong = Math.round((step1 + c) * 100) / 100;
+    return {
+      expr: `−${fmt(a)} + ${fmt(b)} − ${fmt(c)} =`,
+      wrong: fmt(wrong),
+      correct: fmt(correct),
+      explain: `По порядку: −${fmt(a)} + ${fmt(b)} = ${fmt(step1)}; ${fmt(step1)} − ${fmt(c)} = <strong>${fmt(correct)}</strong>. Знак потерян на последнем шаге.`
+    };
+  },
+];
+
+// ─────────────────────────────────────────────
+// Сгенерировать 20 примеров: случайно выбираем генераторы,
+// перемешиваем порядок типов для разнообразия.
+// ─────────────────────────────────────────────
+function generateExamples() {
+  const result = [];
+  const used = new Set();                // чтобы избежать точных дубликатов подряд
+  let attempts = 0;
+  while (result.length < 20 && attempts < 200) {
+    attempts++;
+    const gen = pick(GENERATORS);
+    let ex;
+    try { ex = gen(); } catch (e) { continue; }
+    if (!ex || !ex.expr || !ex.wrong || !ex.correct) continue;
+    // Проверим, что correct ≠ wrong (иначе пример бессмысленный)
+    if (parseNumber(ex.correct) === parseNumber(ex.wrong)) continue;
+    // Избегаем двух одинаковых expr подряд
+    const key = ex.expr;
+    if (used.has(key)) continue;
+    used.add(key);
+    // Стираем старый key, чтобы не копился (хватит памяти на 20)
+    if (used.size > 30) {
+      const first = used.values().next().value;
+      used.delete(first);
+    }
+    result.push({ id: result.length + 1, ...ex });
+  }
+  return result;
+}
+
+let EXAMPLES = generateExamples();
+
+
+// ─────────────────────────────────────────────
+// Парсинг чисел (толерантный к формату ввода)
+// ─────────────────────────────────────────────
+function parseNumber(s) {
+  if (s === null || s === undefined) return NaN;
+  s = String(s).trim().replace(/\s+/g, '');
+  s = s.replace(/[,]/g, '.');                  // запятая → точка
+  s = s.replace(/[−–—−]/g, '-');               // любые минусы → дефис
+  s = s.replace(/^\+/, '');                    // убираем плюс в начале
+  if (s === '' || s === '-' || s === '.') return NaN;
+  return parseFloat(s);
+}
+
+function checkAnswer(userInput, correctStr) {
+  const a = parseNumber(userInput);
+  const b = parseNumber(correctStr);
+  if (isNaN(a) || isNaN(b)) return false;
+  return Math.abs(a - b) < 0.001;
+}
+
+// ─────────────────────────────────────────────
+// Состояние игры
+// ─────────────────────────────────────────────
+const state = {
+  // для каждого примера: { checked: bool, correct: bool, attempts: int }
+  items: EXAMPLES.map(() => ({ checked: false, correct: false, attempts: 0 }))
+};
+
+// ─────────────────────────────────────────────
+// Рендер карточек
+// ─────────────────────────────────────────────
+function renderCards() {
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+
+  EXAMPLES.forEach((ex, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = `card-${ex.id}`;
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="num-badge">${ex.id}</div>
+        <div class="example-text">
+          ${ex.expr} <span class="wrong-answer">${ex.wrong}</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">Правильный ответ:</span>
+        <input type="text" class="answer-input" id="input-${ex.id}"
+               placeholder="например: -5,6" autocomplete="off"
+               inputmode="decimal">
+        <button class="check-btn" id="btn-${ex.id}" data-idx="${idx}">Проверить</button>
+      </div>
+      <div class="feedback" id="feedback-${ex.id}"></div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Привязка обработчиков
+  EXAMPLES.forEach((ex, idx) => {
+    const btn = document.getElementById(`btn-${ex.id}`);
+    const input = document.getElementById(`input-${ex.id}`);
+    btn.addEventListener('click', () => handleCheck(idx));
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleCheck(idx);
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+// Обработка проверки
+// ─────────────────────────────────────────────
+function handleCheck(idx) {
+  const ex = EXAMPLES[idx];
+  const st = state.items[idx];
+  const input = document.getElementById(`input-${ex.id}`);
+  const btn = document.getElementById(`btn-${ex.id}`);
+  const feedback = document.getElementById(`feedback-${ex.id}`);
+  const card = document.getElementById(`card-${ex.id}`);
+
+  const value = input.value;
+
+  if (value.trim() === '') {
+    input.focus();
+    input.style.borderColor = 'var(--warning)';
+    setTimeout(() => { input.style.borderColor = ''; }, 1200);
+    return;
+  }
+
+  st.attempts++;
+  const isCorrect = checkAnswer(value, ex.correct);
+  st.checked = true;
+  st.correct = isCorrect;
+
+  // Обновляем вид карточки
+  card.classList.remove('correct', 'wrong');
+  card.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  // Заполняем обратную связь
+  feedback.classList.remove('correct', 'wrong', 'show');
+  if (isCorrect) {
+    feedback.classList.add('correct', 'show');
+    feedback.innerHTML = `<strong>✓ Верно!</strong> ${ex.explain}`;
+    input.disabled = true;
+    btn.disabled = true;
+    btn.textContent = 'Готово ✓';
+  } else {
+    feedback.classList.add('wrong', 'show');
+    feedback.innerHTML = `<strong>✗ Неверно.</strong> Правильный ответ: ` +
+      `<span class="correct-answer">${ex.correct}</span><br>` +
+      `<em>Правило:</em> ${ex.explain}`;
+    // На неправильном ответе позволяем попробовать снова —
+    // но оставляем подсказку видимой.
+    btn.textContent = 'Проверить снова';
+    // Подсветим поле
+    input.style.borderColor = 'var(--danger)';
+    setTimeout(() => { input.style.borderColor = ''; }, 1500);
+  }
+
+  updateStats();
+}
+
+// ─────────────────────────────────────────────
+// Обновление статистики и финальный экран
+// ─────────────────────────────────────────────
+function updateStats() {
+  const solved = state.items.filter(it => it.checked).length;
+  const correct = state.items.filter(it => it.correct).length;
+  document.getElementById('solved-count').textContent = solved;
+  document.getElementById('correct-count').textContent = correct;
+  document.getElementById('progress-fill').style.width = (solved / 20 * 100) + '%';
+
+  // Когда все 20 верно решены — показываем финальное окно
+  if (correct === 20 && !state.finalShown) {
+    state.finalShown = true;
+    setTimeout(showFinalModal, 500);
+  }
+}
+
+function showFinalModal() {
+  const modal = document.getElementById('results-modal');
+  const emoji = document.getElementById('modal-emoji');
+  const title = document.getElementById('modal-title');
+  const message = document.getElementById('modal-message');
+
+  document.getElementById('modal-correct').textContent = '20';
+
+  emoji.textContent = '🏆';
+  title.textContent = 'Превосходно!';
+  message.innerHTML = 'Вы решили все 20 примеров без ошибок! ' +
+    'Отличное владение действиями с положительными и отрицательными десятичными дробями.';
+
+  modal.classList.add('show');
+}
+
+// ─────────────────────────────────────────────
+// Кнопка «Показать все ответы» — раскрывает верные ответы
+// на ещё не решённых примерах (без засчёта их как верных)
+// ─────────────────────────────────────────────
+document.getElementById('reveal-all-btn').addEventListener('click', () => {
+  if (!confirm('Раскрыть все правильные ответы? Текущий результат будет сохранён, но нерешённые примеры будут помечены как пропущенные.')) return;
+
+  EXAMPLES.forEach((ex, idx) => {
+    const st = state.items[idx];
+    if (!st.checked) {
+      st.checked = true;
+      st.correct = false;
+      const input = document.getElementById(`input-${ex.id}`);
+      const btn = document.getElementById(`btn-${ex.id}`);
+      const feedback = document.getElementById(`feedback-${ex.id}`);
+      const card = document.getElementById(`card-${ex.id}`);
+      input.value = ex.correct;
+      input.disabled = true;
+      btn.disabled = true;
+      btn.textContent = 'Раскрыто';
+      card.classList.add('wrong');
+      feedback.classList.add('wrong', 'show');
+      feedback.innerHTML = `<strong>Пропущен.</strong> Правильный ответ: ` +
+        `<span class="correct-answer">${ex.correct}</span><br>` +
+        `<em>Правило:</em> ${ex.explain}`;
+    }
+  });
+  updateStats();
+});
+
+// ─────────────────────────────────────────────
+// Кнопка «Начать заново» — генерирует НОВЫЙ набор примеров
+// ─────────────────────────────────────────────
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!confirm('Начать игру заново? Будет сгенерирован новый набор из 20 примеров.')) return;
+  EXAMPLES = generateExamples();   // ← новый случайный набор
+  state.items = EXAMPLES.map(() => ({ checked: false, correct: false, attempts: 0 }));
+  state.finalShown = false;
+  renderCards();
+  updateStats();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Закрытие модального окна
+document.getElementById('modal-close-btn').addEventListener('click', () => {
+  document.getElementById('results-modal').classList.remove('show');
+});
+document.getElementById('results-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'results-modal') {
+    e.currentTarget.classList.remove('show');
+  }
+});
+
+// ─────────────────────────────────────────────
+// Инициализация
+// ─────────────────────────────────────────────
+renderCards();
+updateStats();
+</script>
+
+</body>
+</html>
